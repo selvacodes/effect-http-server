@@ -37,7 +37,7 @@ const makeUserRepository = Effect.gen(function*() {
 		const users = yield* Ref.get(usersRe);
 		const newList = [...users, newUser]
 		yield* Ref.update(usersRe, n => newList)
-		console.log("data", nextNumRef, newUser)
+		// console.log("data", nextNumRef, newUser)
 		return newUser
 	})
 

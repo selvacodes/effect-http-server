@@ -6,6 +6,7 @@ import { Api, Representation, RouterBuilder, Middlewares, ApiGroup } from "effec
 import { CustomRandom } from './random'
 import { Next, User, UserRaw, UserRepository, UserT, Users, type UserRawT } from "./domain/user"
 
+
 export const api = Api.make({ title: "Example API" }).pipe(
 	Api.addEndpoint(
 		Api.get("root", "/").pipe(
@@ -49,6 +50,9 @@ const randomApi = pipe(
 	),
 )
 
+const initialState = Ref.make(0)
+const initialUsers = Ref.make<Array<UserT>>([])
+
 const randomHandler = Effect.gen(function*() {
 	const random = yield* CustomRandom
 	const number = yield* random.next
@@ -69,7 +73,6 @@ const getAllHandler = () => Effect.gen(function*() {
 
 const storeUserHandler = (body: UserRawT) => Effect.gen(function*() {
 	const userRepo = yield* UserRepository
-	console.log("in store user handler")
 	const user = yield* userRepo.createUser(body)
 	return user
 })
@@ -79,10 +82,7 @@ export const app = RouterBuilder.make(apis).pipe(
 	RouterBuilder.handle("root", () => Effect.succeed({ content: { hello: "world" }, status: 200 as const })),
 	RouterBuilder.handle("user::delete", () => Effect.succeed({ name: "delete user" })),
 	RouterBuilder.handle("user::get", (req) => getUserHandler(req.path)),
-	RouterBuilder.handle("user::store", req => {
-		console.log("user::store")
-		return storeUserHandler(req.body)
-	}),
+	RouterBuilder.handle("user::store", req => storeUserHandler(req.body)),
 	RouterBuilder.handle("user::put", () => Effect.succeed({ name: "update user" })),
 	RouterBuilder.handle("user::get-all", getAllHandler),
 	RouterBuilder.handle("random::get", () => randomHandler),
@@ -91,9 +91,6 @@ export const app = RouterBuilder.make(apis).pipe(
 	Middlewares.endpointCallsMetric(),
 	Middlewares.uuidLogAnnotation()
 )
-
-const initialState = Ref.make(0)
-const initialUsers = Ref.make<Array<UserT>>([])
 
 export const application = Effect.gen(function*() {
 	const port = yield* Config.number("PORT")
