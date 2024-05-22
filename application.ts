@@ -26,16 +26,16 @@ const userApi = pipe(
 		}
 	}),
 	ApiGroup.addEndpoint(
-		ApiGroup.get("getUser", "/user/:id").pipe(Api.setResponseBody(Response), Api.setRequestPath(GetIdFromPath))
+		ApiGroup.get("user::get", "/user/:id").pipe(Api.setResponseBody(Response), Api.setRequestPath(GetIdFromPath))
 	),
 	ApiGroup.addEndpoint(
-		ApiGroup.post("storeUser", "/user").pipe(Api.setResponseBody(Response))
+		ApiGroup.post("user::store", "/user").pipe(Api.setResponseBody(Response))
 	),
 	ApiGroup.addEndpoint(
-		ApiGroup.put("updateUser", "/user").pipe(Api.setResponseBody(Response))
+		ApiGroup.put("user::put", "/user").pipe(Api.setResponseBody(Response))
 	),
 	ApiGroup.addEndpoint(
-		ApiGroup.delete("deleteUser", "/user").pipe(Api.setResponseBody(Response))
+		ApiGroup.delete("user::delete", "/user").pipe(Api.setResponseBody(Response))
 	)
 )
 const randomApi = pipe(
@@ -62,14 +62,14 @@ const getUserHandler =  (path : GetIdFromPathT) =>  Effect.gen(function*() {
 	const number = yield* random.next
 	return { name: `get random for ${path.id} :: ${number}`}
 })
-const apis = api.pipe(Api.addGroup(userApi)).pipe(Api.addGroup(randomApi))
+export const apis = api.pipe(Api.addGroup(userApi)).pipe(Api.addGroup(randomApi))
 
 export const app = RouterBuilder.make(apis).pipe(
 	RouterBuilder.handle("root", () => Effect.succeed({ content: { hello: "world" }, status: 200 as const })),
-	RouterBuilder.handle("deleteUser", () => Effect.succeed({ name: "delete world" })),
-	RouterBuilder.handle("getUser", (req) => getUserHandler(req.path)),
-	RouterBuilder.handle("storeUser", () => Effect.succeed({ name: "store world" })),
-	RouterBuilder.handle("updateUser", () => Effect.succeed({ name: "update world" })),
+	RouterBuilder.handle("user::delete", () => Effect.succeed({ name: "delete user" })),
+	RouterBuilder.handle("user::get", (req) => getUserHandler(req.path)),
+	RouterBuilder.handle("user::store", () => Effect.succeed({ name: "store user" })),
+	RouterBuilder.handle("user::put", () => Effect.succeed({ name: "update user" })),
 	RouterBuilder.handle("random::get", () => randomHandler),
 	RouterBuilder.build,
 	Middlewares.accessLog(),
@@ -77,10 +77,9 @@ export const app = RouterBuilder.make(apis).pipe(
 	Middlewares.uuidLogAnnotation()
 )
 
-const application = Effect.gen(function*() {
+export const application = Effect.gen(function*() {
 	const port = yield* Config.number("PORT")
 	const main = yield* app.pipe(NodeServer.listen({ port }))
 	return main
 }).pipe(Effect.provide(CustomRandom.Live))
 
-NodeRuntime.runMain(application)
