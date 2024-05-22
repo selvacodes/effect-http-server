@@ -38,6 +38,7 @@ const getUserHandler = (path: GetIdFromPathT) => Effect.gen(function*(_) {
 	}))
 	return user
 })
+
 const deleteUserHandler = (path: GetIdFromPathT) => Effect.gen(function*(_) {
 	const userRepo = yield* UserRepository
 	const user = yield* userRepo.deleteUser(path.id).pipe(Effect.catchTags({
