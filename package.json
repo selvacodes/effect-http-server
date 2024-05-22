@@ -1,0 +1,16 @@
+{
+  "name": "effect-http-server",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "effect": "^3.2.3",
+    "effect-http": "^0.67.1",
+    "effect-http-node": "^0.13.2"
+  }
+}
