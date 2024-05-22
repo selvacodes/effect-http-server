@@ -1,5 +1,5 @@
 
-import { Api,  RouterBuilder,  ApiGroup, HttpError } from "effect-http"
+import { Api, RouterBuilder, ApiGroup, HttpError, ApiResponse } from "effect-http"
 import { Schema } from "@effect/schema"
 import { Effect, pipe } from "effect"
 import { User, UserRaw, UserRepository, type UserRawT } from "./user"
@@ -8,12 +8,16 @@ export const Response = Schema.Struct({ name: Schema.String })
 export const GetIdFromPath = Schema.Struct({ id: Schema.NumberFromString })
 export type GetIdFromPathT = Schema.Schema.Type<typeof GetIdFromPath>
 
+export class ApiError extends Schema.TaggedError<ApiError>()("ApiError", {
+	message: Schema.String,
+	details: Schema.String
+}) { }
 export const userApiSpecAsGroup = pipe(
 	ApiGroup.make("Users", {
 		description: "All about users",
 	}),
 	ApiGroup.addEndpoint(
-		ApiGroup.get("user::get", "/user/:id").pipe(Api.setResponseBody(User), Api.setRequestPath(GetIdFromPath))
+		ApiGroup.get("user::get", "/user/:id").pipe(Api.setResponseBody(User), Api.setRequestPath(GetIdFromPath), Api.addResponse(ApiResponse.make(404, ApiError)))
 	),
 	ApiGroup.addEndpoint(
 		ApiGroup.post("user::store", "/user").pipe(Api.setResponseBody(User)).pipe(Api.setRequestBody(UserRaw))
@@ -33,16 +37,22 @@ export const userApiSpecs = Api.make().pipe(Api.addGroup(userApiSpecAsGroup))
 
 const getUserHandler = (path: GetIdFromPathT) => Effect.gen(function*(_) {
 	const userRepo = yield* UserRepository
-	const user = yield* userRepo.getUser(path.id).pipe(Effect.catchTags({
-		"UserNotFound": ({ message }) => HttpError.notFoundError(message)
-	}))
+	const user = yield* _(userRepo.getUser(path.id).pipe(Effect.catchTags({
+		"UserNotFound": ({ message }) => HttpError.notFoundError({
+			message: message,
+			details: message
+		})
+	})))
 	return user
 })
 
 const deleteUserHandler = (path: GetIdFromPathT) => Effect.gen(function*(_) {
 	const userRepo = yield* UserRepository
 	const user = yield* userRepo.deleteUser(path.id).pipe(Effect.catchTags({
-		"UserNotFound": ({ message }) => HttpError.notFoundError(message)
+		"UserNotFound": ({ message }) => HttpError.notFoundError({
+			message: message,
+			details: message
+		})
 	}))
 	return user
 })
@@ -59,7 +69,7 @@ const storeUserHandler = (body: UserRawT) => Effect.gen(function*() {
 	return user
 })
 
-export const deleteHandler = RouterBuilder.handler(userApiSpecs, "user::delete", ({path}) => deleteUserHandler(path))
+export const deleteHandler = RouterBuilder.handler(userApiSpecs, "user::delete", ({ path }) => deleteUserHandler(path))
 export const getHandler = RouterBuilder.handler(userApiSpecs, "user::get", (req) => getUserHandler(req.path))
 export const storeHandler = RouterBuilder.handler(userApiSpecs, "user::store", req => storeUserHandler(req.body))
 export const getAllHandlers = RouterBuilder.handler(userApiSpecs, "user::get-all", getAllHandler)

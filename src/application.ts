@@ -48,7 +48,7 @@ export const app = RouterBuilder.make(apis).pipe(
 	RouterBuilder.build,
 	Middlewares.accessLog(),
 	Middlewares.endpointCallsMetric(),
-	Middlewares.uuidLogAnnotation()
+	// Middlewares.uuidLogAnnotation()
 )
 
 export const application = Effect.gen(function*() {

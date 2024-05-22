@@ -11,6 +11,7 @@
   "dependencies": {
     "effect": "^3.2.3",
     "effect-http": "^0.67.1",
-    "effect-http-node": "^0.13.2"
+    "effect-http-node": "^0.13.2",
+    "effect-log": "^0.31.3"
   }
 }

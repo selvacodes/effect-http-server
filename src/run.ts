@@ -1,4 +1,11 @@
 import { NodeRuntime } from "@effect/platform-node"
-import { application } from "./application"
+import { app, application } from "./application"
+import { PrettyLogger } from "effect-log"
+import { Effect } from "effect"
 
-NodeRuntime.runMain(application)
+// NodeServer.listen({ port: 3000 }),
+//  Effect.provide(PrettyLogger.layer()),
+//  NodeRuntime.runMain
+
+application.pipe(Effect.provide(PrettyLogger.layer()),
+	NodeRuntime.runMain)
