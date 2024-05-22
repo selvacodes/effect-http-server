@@ -29,19 +29,19 @@ const response4 = pipe(
 	Effect.map((_) => "Success for user::get"),
 	Effect.scoped,
 );
+const response5 = pipe(
+	client["user::get"]({ path: { id: 10 } }),
+	Effect.flatMap((user) => Effect.log(`Got nice!`, user)),
+	Effect.map((_) => "Success for user::get"),
+	Effect.scoped,
+);
 
-// const response_1 = pipe(
-// 	client["random::get"]({}),
-// 	Effect.flatMap((user) => Effect.log(`Got random ${user}, nice!`)),
-// 	Effect.map((_) => "Success for random::get"),
-// 	Effect.scoped,
-// );
-//
 
 const allEffects = Effect.all([response, response2, response3]).pipe(Effect.flatMap(_ => response4))
 const y = Effect.gen(function*() {
 	const one = yield* response4
 	const two = yield* allEffects
+	const three = yield* response5
 })
 
 Effect.runPromiseExit(y).then(_ => console.log(_))
