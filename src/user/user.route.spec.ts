@@ -1,8 +1,10 @@
 
-import { Api, RouterBuilder, ApiGroup, HttpError, ApiResponse } from "effect-http"
+import { Api, RouterBuilder, ApiGroup, HttpError, ApiResponse, Middlewares } from "effect-http"
+import * as Http from "@effect/platform/HttpServer"
 import { Schema } from "@effect/schema"
 import { Effect, pipe } from "effect"
 import { User, UserRaw, UserRepository, type UserRawT } from "./user"
+import { withMiddleware } from "../common/middleware"
 
 export const Response = Schema.Struct({ name: Schema.String })
 export const GetIdFromPath = Schema.Struct({ id: Schema.NumberFromString })
@@ -87,4 +89,4 @@ export const userRoutes = RouterBuilder.make(userApiSpecs).pipe(
 	RouterBuilder.handle(getAllHandlers),
 	RouterBuilder.handle(deleteHandler)
 )
-export const userRouter = RouterBuilder.getRouter(userRoutes)
+export const userRouter = RouterBuilder.getRouter(userRoutes).pipe(Http.router.use(withMiddleware("M1")))
