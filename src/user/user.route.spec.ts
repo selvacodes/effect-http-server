@@ -12,12 +12,16 @@ export class ApiError extends Schema.TaggedError<ApiError>()("ApiError", {
 	message: Schema.String,
 	details: Schema.String
 }) { }
+
 export const userApiSpecAsGroup = pipe(
 	ApiGroup.make("Users", {
 		description: "All about users",
 	}),
 	ApiGroup.addEndpoint(
-		ApiGroup.get("user::get", "/user/:id").pipe(Api.setResponseBody(User), Api.setRequestPath(GetIdFromPath), Api.addResponse(ApiResponse.make(404, ApiError)))
+		ApiGroup.get("user::get", "/user/:id").pipe(
+			Api.setResponseBody(User)
+			, Api.setRequestPath(GetIdFromPath)
+			, Api.addResponse(ApiResponse.make(404, ApiError)))
 	),
 	ApiGroup.addEndpoint(
 		ApiGroup.post("user::store", "/user").pipe(Api.setResponseBody(User)).pipe(Api.setRequestBody(UserRaw))
@@ -69,8 +73,18 @@ const storeUserHandler = (body: UserRawT) => Effect.gen(function*() {
 	return user
 })
 
+
 export const deleteHandler = RouterBuilder.handler(userApiSpecs, "user::delete", ({ path }) => deleteUserHandler(path))
 export const getHandler = RouterBuilder.handler(userApiSpecs, "user::get", (req) => getUserHandler(req.path))
 export const storeHandler = RouterBuilder.handler(userApiSpecs, "user::store", req => storeUserHandler(req.body))
 export const getAllHandlers = RouterBuilder.handler(userApiSpecs, "user::get-all", getAllHandler)
 export const putHandler = RouterBuilder.handler(userApiSpecs, "user::put", () => Effect.succeed({ name: "update user" }))
+
+export const userRoutes = RouterBuilder.make(userApiSpecs).pipe(
+	RouterBuilder.handle(getHandler),
+	RouterBuilder.handle(storeHandler),
+	RouterBuilder.handle(putHandler),
+	RouterBuilder.handle(getAllHandlers),
+	RouterBuilder.handle(deleteHandler)
+)
+export const userRouter = RouterBuilder.getRouter(userRoutes)

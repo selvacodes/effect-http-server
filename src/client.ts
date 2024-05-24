@@ -1,8 +1,12 @@
 import { Effect, pipe } from "effect";
-import { Client } from "effect-http";
-import { apis } from "./application";
+import { Api, Client } from "effect-http";
+import { userApiSpecs } from "./user/user.route.spec.ts";
+import { randomApiGroup, randomApiSpecs } from "./random/random.route.ts";
+import { AliveApiGroup } from "./alive/alive.router.ts";
 
-const client = Client.make(apis, { baseUrl: "http://localhost:3000" });
+const apiSpecsCombined = userApiSpecs.pipe(Api.addGroup(randomApiGroup)).pipe(Api.addGroup(AliveApiGroup))
+
+const client = Client.make(apiSpecsCombined, { baseUrl: "http://localhost:3000" });
 
 const response = pipe(
 	client["user::store"]({ body: { name: "selva" + Math.random(), email: "selva.g@workativ.com" } }),
