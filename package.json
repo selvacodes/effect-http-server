@@ -2,16 +2,23 @@
   "name": "effect-http-server",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "test": "vitest",
+    "format": "prettier src/** --write"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "prettier": "^3.2.5"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@effect/vitest": "^0.5.5",
     "effect": "^3.2.3",
     "effect-http": "^0.67.1",
     "effect-http-node": "^0.13.2",
-    "effect-log": "^0.31.3"
+    "effect-log": "^0.31.3",
+    "vitest": "^1.6.0"
   }
 }
