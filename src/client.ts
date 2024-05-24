@@ -1,6 +1,6 @@
 import { Effect, pipe } from 'effect'
 import { Api, Client } from 'effect-http'
-import { userApiSpecs } from './user/user.route.specfication'
+import { userApiSpecs } from './user/user.route.specs.ts'
 import { randomApiGroup } from './random/random.route.ts'
 import { AliveApiGroup } from './alive/alive.router.ts'
 
