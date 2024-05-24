@@ -2,7 +2,7 @@ import { describe, test, expect } from 'vitest'
 import { it } from '@effect/vitest'
 import { Effect, pipe } from 'effect'
 import { Api, Client } from 'effect-http'
-import { userApiSpecs } from './user/user.route.specfication.ts'
+import { userApiSpecs } from './user/user.route.specs.ts'
 import { randomApiGroup } from './random/random.route.ts'
 import { AliveApiGroup } from './alive/alive.router.ts'
 
@@ -12,7 +12,6 @@ const apiSpecsCombined = userApiSpecs
 const client = Client.make(apiSpecsCombined, {
   baseUrl: 'http://localhost:3000',
 })
-
 describe('Server is up', () => {
   it.effect('Test Server is alive', () =>
     Effect.gen(function* ($) {

@@ -4,7 +4,7 @@ import { Effect } from 'effect'
 import { NodeServer } from 'effect-http-node'
 import { AliveApiGroup } from './alive/alive.router'
 import { randomApiGroup } from './random/random.route'
-import { userApiSpecAsGroup } from './user/user.route.spec'
+import { userApiSpecAsGroup } from './user/user.route.specfication'
 import { Api, RouterBuilder, ExampleServer } from 'effect-http'
 
 const allRoutesCombined = Api.make()

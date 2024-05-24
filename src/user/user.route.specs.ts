@@ -4,7 +4,6 @@ import {
   ApiGroup,
   HttpError,
   ApiResponse,
-  Middlewares,
 } from 'effect-http'
 import * as Http from '@effect/platform/HttpServer'
 import { Schema } from '@effect/schema'

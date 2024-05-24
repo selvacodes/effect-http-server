@@ -8,7 +8,7 @@ import { Next, UserRepository, Users } from './user/user.op'
 import { userStore, userIdStore } from './user/user.store'
 import { aliveRouter } from './alive/alive.router'
 import { randomRouter } from './random/random.route'
-import { userRouter } from './user/user.route.specfication'
+import { userRouter } from './user/user.route.specs'
 import { Middlewares } from 'effect-http'
 
 const allRoutesCombined = userRouter
